@@ -1,0 +1,6 @@
+# @package _global_
+OPTIMIZER:
+  CLASS_NAME: torch.optim.Adam
+  PARAMS:
+    lr: ${TRAIN.LR}
+    weight_decay: 0.001

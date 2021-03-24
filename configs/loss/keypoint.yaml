@@ -1,0 +1,19 @@
+# @package _global_
+LOSS:
+  AE_LOSS_TYPE: exp
+  HEATMAPS_LOSS_FACTOR:
+  - 1.0
+  - 1.0
+  NUM_STAGES: 2
+  PULL_LOSS_FACTOR:
+  - 0.001
+  - 0.001
+  PUSH_LOSS_FACTOR:
+  - 0.001
+  - 0.001
+  WITH_AE_LOSS:
+  - true
+  - false
+  WITH_HEATMAPS_LOSS:
+  - true
+  - true

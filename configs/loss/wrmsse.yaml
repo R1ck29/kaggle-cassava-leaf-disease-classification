@@ -1,0 +1,4 @@
+# @package _global_
+LOSS:
+  CLASS_NAME: src.utils.custom_loss_functions.WRMSSE
+  PARAMS:

@@ -1,0 +1,6 @@
+# @package _global_
+LOSS:
+  CLASS_NAME: src.models.loss.classification.label_smoothing_loss.LabelSmoothingLoss
+  PARAMS:
+    classes: 5
+    smoothing: 0.3

@@ -1,0 +1,105 @@
+# @package _global_
+ALBUMENTATIONS:
+  TRAIN:
+    AUGS:
+    - CLASS_NAME: albumentations.Resize
+      params:
+        always_apply: false
+        height: ${MODEL.INPUT_SIZE.HEIGHT}
+        interpolation: 1
+        width: ${MODEL.INPUT_SIZE.WIDTH}
+        p: 1
+    - CLASS_NAME: albumentations.PadIfNeeded
+      params:
+        min_height: 10
+        min_width: 10
+        p: 1
+    - CLASS_NAME: albumentations.OneOf
+      p: 0.3
+      params:
+        - CLASS_NAME: albumentations.RandomBrightness
+          params:
+            limit: 0.1
+            p: 1
+        - CLASS_NAME: albumentations.RandomContrast
+          params:
+            limit: 0.1
+            p: 1
+    - CLASS_NAME: albumentations.OneOf
+      p: 0.5
+      params:
+        - CLASS_NAME: albumentations.MotionBlur
+          params:
+            blur_limit: 5
+        - CLASS_NAME: albumentations.MedianBlur
+          params:
+            blur_limit: 5
+        - CLASS_NAME: albumentations.GaussianBlur
+          params:
+            blur_limit: 5
+        - CLASS_NAME: albumentations.GaussNoise
+          params:
+            var_limit: 
+            - 5.0
+            - 30.0
+    - CLASS_NAME: albumentations.Cutout
+      params:
+        max_h_size: 8
+        max_w_size: 8
+        num_holes: 4
+        p: 0.5
+    - CLASS_NAME: albumentations.HorizontalFlip
+      params:
+        always_apply: false
+        p: 0.5
+    - CLASS_NAME: albumentations.ShiftScaleRotate
+      params:
+        shift_limit: 0.0625 #0.3
+        scale_limit: 0.1 #0.15
+        rotate_limit: 15
+        border_mode: 0
+        p: 0.3 #0.5
+    - CLASS_NAME: albumentations.Normalize
+      params:
+        always_apply: true
+        p: 1.0
+    - CLASS_NAME: albumentations.pytorch.transforms.ToTensorV2
+      params:
+        always_apply: true
+        p: 1.0
+
+  VALID:
+    AUGS:
+    - CLASS_NAME: albumentations.Resize
+      params:
+        always_apply: false
+        height: ${MODEL.INPUT_SIZE.HEIGHT}
+        interpolation: 1
+        width: ${MODEL.INPUT_SIZE.WIDTH}
+        p: 1
+    - CLASS_NAME: albumentations.Normalize
+      params:
+        always_apply: true
+        p: 1.0
+    - CLASS_NAME: albumentations.pytorch.transforms.ToTensorV2
+      params:
+        always_apply: true
+        p: 1.0
+
+  TEST:
+    AUGS:
+      - CLASS_NAME: albumentations.Resize
+        params:
+          always_apply: false
+          height: ${MODEL.INPUT_SIZE.HEIGHT}
+          interpolation: 1
+          width: ${MODEL.INPUT_SIZE.WIDTH}
+          p: 1
+      - CLASS_NAME: albumentations.Normalize
+        params:
+          always_apply: true
+          p: 1.0
+      - CLASS_NAME: albumentations.pytorch.transforms.ToTensorV2
+        params:
+          always_apply: true
+          p: 1.0

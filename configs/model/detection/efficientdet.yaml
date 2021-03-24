@@ -1,0 +1,26 @@
+# @package _global_
+MODEL:
+  INPUT_SIZE: 512
+  OUTPUT_SIZE: 1024
+  NUM_CLASSES: 1
+  BASE_NAME: efficientdet_d4
+  MODEL_NAME: tf_${MODEL.BASE_NAME}
+  CONFIG:
+    CLASS_NAME: src.models.modeling.detection.effdet.get_efficientdet_config
+    PARAMS:
+  BACKBONE:
+    CLASS_NAME: src.models.modeling.detection.effdet.EfficientDet
+    PARAMS:
+      WEIGHT_PATH: models/pretrained_models/efficientdet/ #pretrained_model_dir
+      PRETRAINED_BACKBONE: False #False
+      
+  HEAD:
+    CLASS_NAME: src.models.modeling.detection.effdet.efficientdet.HeadNet
+    PARAMS:
+      NUM_CLASSES: ${MODEL.NUM_CLASSES}
+
+  TRAIN:
+    CLASS_NAME: src.models.modeling.detection.effdet.DetBenchTrain
+
+  TEST:
+    CLASS_NAME: src.models.modeling.detection.effdet.DetBenchPredict

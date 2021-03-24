@@ -1,0 +1,84 @@
+# @package _global_
+ALBUMENTATIONS:
+  TRAIN:
+    AUGS:
+    - CLASS_NAME: albumentations.RandomResizedCrop
+      params:
+        height: ${MODEL.INPUT_SIZE.HEIGHT}
+        width: ${MODEL.INPUT_SIZE.WIDTH}
+        p: 1
+    - CLASS_NAME: albumentations.Transpose
+      params:
+        p: 0.5
+    - CLASS_NAME: albumentations.HorizontalFlip
+      params:
+        always_apply: false
+        p: 0.5
+    - CLASS_NAME: albumentations.VerticalFlip
+      params:
+        always_apply: false
+        p: 0.5
+    - CLASS_NAME: albumentations.ShiftScaleRotate
+      params:
+        p: 0.5
+    - CLASS_NAME: albumentations.HueSaturationValue
+      params:
+        hue_shift_limit: 0.2
+        sat_shift_limit: 0.2
+        val_shift_limit: 0.2
+        p: 0.5
+    - CLASS_NAME: albumentations.RandomBrightnessContrast
+      params:
+        brightness_limit: 0.1
+        contrast_limit: 0.1
+        p: 0.5
+    - CLASS_NAME: albumentations.Normalize
+      params:
+        always_apply: true
+        p: 1.0
+    - CLASS_NAME: albumentations.CoarseDropout
+      params:
+        p: 0.5
+    - CLASS_NAME: albumentations.Cutout
+      params:
+        p: 0.5
+    - CLASS_NAME: albumentations.pytorch.transforms.ToTensorV2
+      params:
+        always_apply: true
+        p: 1.0
+
+  VALID:
+    AUGS:
+    - CLASS_NAME: albumentations.Resize
+      params:
+        always_apply: false
+        height: ${MODEL.INPUT_SIZE.HEIGHT}
+        interpolation: 1
+        width: ${MODEL.INPUT_SIZE.WIDTH}
+        p: 1
+    - CLASS_NAME: albumentations.Normalize
+      params:
+        always_apply: true
+        p: 1.0
+    - CLASS_NAME: albumentations.pytorch.transforms.ToTensorV2
+      params:
+        always_apply: true
+        p: 1.0
+
+  TEST:
+    AUGS:
+      - CLASS_NAME: albumentations.Resize
+        params:
+          always_apply: false
+          height: ${MODEL.INPUT_SIZE.HEIGHT}
+          interpolation: 1
+          width: ${MODEL.INPUT_SIZE.WIDTH}
+          p: 1
+      - CLASS_NAME: albumentations.Normalize
+        params:
+          always_apply: true
+          p: 1.0
+      - CLASS_NAME: albumentations.pytorch.transforms.ToTensorV2
+        params:
+          always_apply: true
+          p: 1.0

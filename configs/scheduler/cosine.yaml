@@ -1,0 +1,8 @@
+# @package _global_
+SCHEDULER:
+  CLASS_NAME: torch.optim.lr_scheduler.CosineAnnealingLR
+  STEP: epoch
+  MONITOR: ${TRAIN.MONITOR}
+  PARAMS:
+    T_max: 10
+    eta_min: 0

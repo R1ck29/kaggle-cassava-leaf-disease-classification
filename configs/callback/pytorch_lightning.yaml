@@ -1,0 +1,29 @@
+# @package _global_
+CALLBACK:
+  MODEL_CHECKPOINT:
+    CLASS_NAME: pl.callbacks.ModelCheckpoint
+    PARAMS:
+      monitor: ${TRAIN.MONITOR}
+      save_top_k: 1
+      mode: ${TRAIN.MODE}
+      save_weights_only: false
+      verbose: true
+
+  EARLY_STOPPING:
+    FLAG: false
+    CLASS_NAME: pl.callbacks.EarlyStopping
+    PARAMS:
+      monitor: ${TRAIN.MONITOR}
+      patience: 20
+      mode: ${TRAIN.MODE}
+      verbose: true
+
+  LOGGER:
+    TENSORBOARD: true
+    COMMET:
+      FLAG: false
+      SAVE_DIR: logs/
+      WORKSPACE: r1ck29
+      PROJECT_NAME: wheat_v2
+      DEVICE: cuda
+    JSON: false

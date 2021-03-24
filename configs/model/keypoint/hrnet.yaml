@@ -1,0 +1,66 @@
+# @package _global_
+MODEL:
+  MODEL_NAME: kpt_higher_hrnet
+  BACKBONE: hrnet
+  WEIGHT_PATH: pretrained/best_loss.pth
+  WO_HEAD: false
+  INPUT_SIZE: 512
+  OUTPUT_SIZE:
+  - 128
+  - 256
+  NUM_JOINTS: 16
+  TAG_PER_JOINT: true
+  
+  EXTRA:
+    DECONV:
+      CAT_OUTPUT:
+      - true
+      KERNEL_SIZE:
+      - 4
+      NUM_BASIC_BLOCKS: 4
+      NUM_CHANNELS:
+      - 32
+      NUM_DECONVS: 1
+    FINAL_CONV_KERNEL: 1
+    PRETRAINED_LAYERS:
+    - '*'
+    STAGE2:
+      BLOCK: BASIC
+      FUSE_METHOD: SUM
+      NUM_BLOCKS:
+      - 4
+      - 4
+      NUM_BRANCHES: 2
+      NUM_CHANNELS:
+      - 32
+      - 64
+      NUM_MODULES: 1
+    STAGE3:
+      BLOCK: BASIC
+      FUSE_METHOD: SUM
+      NUM_BLOCKS:
+      - 4
+      - 4
+      - 4
+      NUM_BRANCHES: 3
+      NUM_CHANNELS:
+      - 32
+      - 64
+      - 128
+      NUM_MODULES: 4
+    STAGE4:
+      BLOCK: BASIC
+      FUSE_METHOD: SUM
+      NUM_BLOCKS:
+      - 4
+      - 4
+      - 4
+      - 4
+      NUM_BRANCHES: 4
+      NUM_CHANNELS:
+      - 32
+      - 64
+      - 128
+      - 256
+      NUM_MODULES: 3
+    STEM_INPLANES: 64

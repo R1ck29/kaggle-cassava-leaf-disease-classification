@@ -1,0 +1,56 @@
+# @package _global_
+AUGMENTATION:
+  FRAMEWORK: albumentations_detection
+
+SYSTEM:
+  GPUS: '1'
+  SEED: 666
+  CUDNN: 
+    ENABLED: true
+    BENCHMARK: false
+    DETERMINISTIC: true
+
+DATA:
+  DATA_ID: open_images_person
+  TRAIN_IMAGE_DIR: data/${DATA.DATA_ID}/raw/person/images
+  PROCESSED_CSV_NAME: '_features.csv'
+  EXTRACT_ONE_CLASS: true
+  CSV_PATH: data/${DATA.DATA_ID}/split/train_folds_main.csv
+  N_FOLD: 1
+  FOLD_TARGET_COL: count
+  FORMAT: pascal_voc
+  IMAGE_ID_COL_NAME: ImageID
+
+
+MODEL:
+  INPUT_SIZE: 512
+  OUTPUT_SIZE: 512
+  NUM_CLASSES: 1
+  BASE_NAME: efficientdet_d4
+
+TRAIN:
+  EPOCHS: 100
+  LR: 0.0002
+  BATCH_SIZE: 4
+  DEBUG: false
+
+CALLBACK: 
+  LOGGER:
+    COMMET:
+      FLAG: false
+      PROJECT_NAME: open_images_person
+  EARLY_STOPPING:
+    FLAG: true
+
+FRAMEWORK: pytorch
+TASK: detection
+MODEL_ID: effdet_open_images_person
+
+TEST:
+  SAVE_ALL_IMAGES: false
+  FIND_BEST_THR: true
+  BATCH_SIZE: 2
+  DETECTION_THRESHOLD: 0.2
+  TEST_IMAGE_DIR: data/${DATA.DATA_ID}/raw/person/images
+  TEST_CSV_PATH: data/${DATA.DATA_ID}/split/test_person_v3.csv # for train 2_1, use v3
+  VISUALIZE_RESULTS: true

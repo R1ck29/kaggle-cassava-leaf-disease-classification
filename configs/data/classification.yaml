@@ -1,0 +1,19 @@
+# @package _global_
+DATA:
+  DATA_ID: PA100k
+  NUM_CLASSES: 5
+  TRAIN_IMAGE_DIR: data/${DATA.DATA_ID}/raw/train
+  CVAT_TASK_TYPE: object_detection
+  EXTRACT_ONE_CLASS: false
+  PROCESSED_CSV_NAME: '_features.csv'
+  CSV_PATH: data/${DATA.DATA_ID}/split/train_folds_v2.csv
+  RANDOM_KFOLD: False
+  TEST_SIZE: 0.2
+  N_FOLD: 5
+  FORMAT: 
+  IMAGE_ID_COL_NAME: image_id
+  FOLD_TARGET_COL: attr_name
+
+DATASET:
+  CLASS_NAME: src.data.generator.classification.dataset.AttrDataset
+  CUTMIX: false

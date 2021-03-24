@@ -1,0 +1,10 @@
+# @package _global_
+SCHEDULER:
+  CLASS_NAME: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  STEP: step
+  MONITOR: ${TRAIN.MONITOR}
+  PARAMS:
+    T_0: 150
+    T_mult: 2 #3
+    eta_min: 0
+    last_epoch: -1

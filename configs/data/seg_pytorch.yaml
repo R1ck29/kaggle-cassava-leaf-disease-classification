@@ -1,0 +1,14 @@
+DATA:
+  DATA_ID: cvat
+  CSV_PATH: split01
+  
+  DATASET: cvat 
+# cvat or cityscapes
+  N_FOLD: 1
+  
+  path: /workspace/TOYOTA/Cityscapes/
+  
+  CVAT_PATH: ./data/cvat
+  CVAT_INPUT: ./data/cvat/raw
+  CVAT_OUTPUT: ./data/cvat/interim
+  

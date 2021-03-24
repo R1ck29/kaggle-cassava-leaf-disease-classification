@@ -1,0 +1,17 @@
+# @package _global_
+defaults:
+  - data: classification
+  - test: classification
+  - system: system
+  
+FRAMEWORK: pytorch
+TASK: keypoint
+MODEL_PATH: models/model_id/20201013_13_17_10
+TEST_ID: test
+  
+hydra:
+  run:
+    dir: ${MODEL_PATH}/result/${TEST_ID} #${now:%Y%m%d_%H_%M_%S}
+  sweep:
+    dir: ${MODEL_PATH}/result/
+    subdir: ${TEST_ID} #${now:%Y%m%d_%H_%M_%S}

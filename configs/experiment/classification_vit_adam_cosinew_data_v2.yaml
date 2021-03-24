@@ -1,0 +1,91 @@
+# @package _global_
+AUGMENTATION:
+  FRAMEWORK: albumentations_classification
+
+SYSTEM:
+  GPUS: '0'
+  SEED: 719
+  CUDNN: 
+    ENABLED: true
+    BENCHMARK: false
+    DETERMINISTIC: true
+
+DATA:
+  DATA_ID: cassava
+  NUM_CLASSES: 5
+  TRAIN_IMAGE_DIR: data/${DATA.DATA_ID}/raw/train
+  CVAT_TASK_TYPE: classification
+  EXTRACT_ONE_CLASS: false
+  PROCESSED_CSV_NAME: '_features.csv'
+  CSV_PATH: data/${DATA.DATA_ID}/split/merged_5folds.csv
+  RANDOM_KFOLD: False
+  TEST_SIZE: 0.2
+  N_FOLD: 5
+  FORMAT: 
+  IMAGE_ID_COL_NAME: image_id
+  FOLD_TARGET_COL: stratify_group
+
+DATASET:
+  CLASS_NAME: src.data.generator.classification.dataset.CustomDataset
+  CUTMIX: false
+
+MODEL:
+  INPUT_SIZE: 
+    HEIGHT: 384
+    WIDTH: 384
+  OUTPUT_SIZE:
+    HEIGHT: 384
+    WIDTH: 384
+  NUM_CLASSES: ${DATA.NUM_CLASSES}
+  MODEL_NAME: vit_base_patch32_384
+  CLIP_GRAD_NORM: false
+
+TRAIN:
+  EPOCHS: 10
+  LR: 1e-5
+  BATCH_SIZE: 16
+  MONITOR: val_loss
+  MODE: "min"
+  DEBUG: false
+
+CALLBACK: 
+  LOGGER:
+    COMMET:
+      FLAG: true
+      PROJECT_NAME: cassava
+  EARLY_STOPPING:
+    FLAG: true
+    PARAMS:
+      patience: 15
+
+OPTIMIZER:
+  CLASS_NAME: torch.optim.Adam
+  PARAMS:
+    lr: ${TRAIN.LR}
+    weight_decay: 1e-6
+
+SCHEDULER:
+  CLASS_NAME: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  STEP: step
+  MONITOR: ${TRAIN.MONITOR}
+  PARAMS:
+    T_0: 10
+    T_mult: 1
+    eta_min: 1e-6
+    last_epoch: -1
+
+FRAMEWORK: pytorch
+TASK: classification
+MODEL_ID: vit_base_patch32_384_adam_cosinew
+
+TEST:
+  BATCH_SIZE: 32
+  TEST_IMAGE_DIR: data/${DATA.DATA_ID}/raw/test_images
+  TEST_CSV_PATH: data/${DATA.DATA_ID}/split/sample_submission.csv
+  VISUALIZE_RESULTS: true
+  SAVE_ALL_IMAGES: false
+  THRESHOLD: 0.5
+  FIND_BEST_THR: false
+  VALID_SCORE_CSV_NAME: valid_score.csv
+  BEST_WEIGHT_TYPE: val_score
+  VALID_PREDICTION: true

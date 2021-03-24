@@ -1,0 +1,4 @@
+# @package _global_
+LOSS:
+  CLASS_NAME: torch.nn.CrossEntropyLoss
+  PARAMS:

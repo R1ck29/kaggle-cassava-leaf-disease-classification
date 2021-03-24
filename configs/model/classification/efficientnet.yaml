@@ -1,0 +1,15 @@
+# @package _global_
+MODEL:
+  INPUT_SIZE: 
+    HEIGHT: 256
+    WIDTH: 192
+  OUTPUT_SIZE:
+    HEIGHT: 256
+    WIDTH: 192
+  NUM_CLASSES: ${DATA.NUM_CLASSES}
+  MODEL_NAME: efficientnet-b0
+  BACKBONE:
+    CLASS_NAME: src.models.backbone.pytorch.efficientnet_pytorch.EfficientNet-PyTorch.EfficientNet-PyTorch-master.efficientnet_pytorch.model.EfficientNet
+    PARAMS:
+      WEIGHT_PATH: models/pretrained_models/efficientnet/
+  CLIP_GRAD_NORM: true

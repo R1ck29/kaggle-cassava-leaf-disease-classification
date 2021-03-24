@@ -1,0 +1,5 @@
+LOSS:
+  name: 'bootstrapped_cross_entropy'
+  min_K: 4096
+  loss_th: 0.3
+  size_average: True

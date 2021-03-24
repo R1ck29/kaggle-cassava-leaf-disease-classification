@@ -1,0 +1,11 @@
+# @package _global_
+SYSTEM:
+  DEVICE: GPU
+  GPUS: 
+  - 1
+  SEED: false
+  NUM_WORKERS: 4
+  CUDNN:
+    ENABLED: true
+    BENCHMARK: true
+    DETERMINISTIC: false

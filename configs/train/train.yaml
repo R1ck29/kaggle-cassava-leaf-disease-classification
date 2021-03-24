@@ -1,0 +1,9 @@
+
+# @package _global_
+TRAIN:
+  EPOCHS: 1000
+  LR: 0.02
+  BATCH_SIZE: 4
+  MONITOR: val_loss
+  MODE: "min"
+  DEBUG: false

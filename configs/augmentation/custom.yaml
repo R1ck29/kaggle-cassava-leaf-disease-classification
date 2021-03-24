@@ -1,0 +1,8 @@
+# @package _global_
+AUGMENTATION:
+  FRAMEWORK: custom
+  FLIP: 0.5
+  MAX_ROTATION: 30
+  MAX_SCALE: 1.5
+  MAX_TRANSLATE: 40
+  MIN_SCALE: 0.75

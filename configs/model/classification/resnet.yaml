@@ -1,0 +1,21 @@
+# @package _global_
+MODEL:
+  INPUT_SIZE: 
+    HEIGHT: 256
+    WIDTH: 192
+  OUTPUT_SIZE:
+    HEIGHT: 256
+    WIDTH: 192
+  NUM_CLASSES: ${DATA.NUM_CLASSES}
+  BASE_NAME: resnet
+  NUM_LAYERS: 50
+  MODEL_NAME: ${MODEL.BASE_NAME}${MODEL.NUM_LAYERS}
+  BACKBONE:
+    CLASS_NAME: src.models.backbone.pytorch.custom_resnet.${MODEL.MODEL_NAME}
+  BASE_CLASSIFIER:
+    CLASS_NAME: src.models.modeling.classification.resnet.base_block.BaseClassifier
+    PARAMS:
+      nattr: ${MODEL.NUM_CLASSES}
+  CUSTOM_CLASSIFIER:
+    CLASS_NAME: src.models.modeling.classification.resnet.base_block.FeatClassifier
+  CLIP_GRAD_NORM: true

@@ -1,0 +1,16 @@
+# @package _global_
+TEST:
+  BATCH_SIZE: 32
+  TEST_IMAGE_DIR: data/${DATA.DATA_ID}/raw/test
+  TEST_CSV_PATH: data/${DATA.DATA_ID}/raw/test_submission.csv
+  VISUALIZE_RESULTS: false
+  VAL_PRED_IMG_DIR: pred_images/validation/
+  TEST_PRED_IMG_DIR: pred_images/test/
+  SAVE_ALL_IMAGES: false
+  THRESHOLD: 0.5
+  FIND_BEST_THR: false
+  BEST_THR_CSV_NAME: best_score_threshold.csv
+  VALID_SCORE_CSV_NAME: valid_score.csv
+  TEST_SCORE_CSV_NAME: test_score.csv
+  BEST_WEIGHT_TYPE: val_score # val_loss
+  VALID_PREDICTION: false

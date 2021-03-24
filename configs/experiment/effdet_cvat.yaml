@@ -1,0 +1,70 @@
+# @package _global_
+AUGMENTATION:
+  FRAMEWORK: albumentations_detection
+  ALBUMENTATIONS:
+    TEST:
+      PATH: configs/augmentation/albumentations/test_augs.yaml # rename here
+
+SYSTEM:
+  GPUS: '1'
+  SEED: 666
+  CUDNN: 
+    ENABLED: true
+    BENCHMARK: false
+    DETERMINISTIC: true
+  
+DATA: 
+  DATA_ID: street_demo #cvat001
+  TRAIN_IMAGE_DIR: data/${DATA.DATA_ID}/raw/images/all
+  CVAT_TASK_TYPE: tracking #object_detection
+  PROCESSED_CSV_NAME: '_features.csv'
+  CSV_PATH: data/${DATA.DATA_ID}/split/train_folds_cvat_street.csv # rename here
+  RANDOM_KFOLD: False
+  N_FOLD: 1
+  TEST_SIZE: 0.2
+  FOLD_TARGET_COL: class_id
+  REMOVE_LARGE_BBOXES: false
+  LARGE_BBOX_AREA_THRESHOLD: 200000
+
+MODEL:
+  INPUT_SIZE: 512
+  OUTPUT_SIZE: 512
+  NUM_CLASSES: 4
+  BASE_NAME: efficientdet_d4
+
+TRAIN:
+  EPOCHS: 100
+  LR: 0.0002
+  BATCH_SIZE: 4
+  DEBUG: false
+
+CALLBACK: 
+  LOGGER:
+    COMMET:
+      FLAG: false
+      PROJECT_NAME: effdet_cvat_street
+      
+  EARLY_STOPPING:
+    FLAG: true
+
+SCHEDULER:
+  CLASS_NAME: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  STEP: step
+  MONITOR: ${TRAIN.MONITOR}
+  PARAMS:
+    T_0: 150
+    T_mult: 2 #3
+    eta_min: 0
+
+FRAMEWORK: pytorch
+TASK: detection
+MODEL_ID: effdet_cvat_street
+
+TEST:
+  SAVE_ALL_IMAGES: false
+  FIND_BEST_THR: true
+  BATCH_SIZE: 2
+  TEST_IMAGE_DIR: data/${DATA.DATA_ID}/raw/images/all
+  TEST_CSV_PATH: data/${DATA.DATA_ID}/interim/test.csv
+  DETECTION_THRESHOLD: 0.2
+  VISUALIZE_RESULTS: true
