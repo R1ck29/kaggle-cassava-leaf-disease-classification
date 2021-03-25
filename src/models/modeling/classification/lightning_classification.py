@@ -32,8 +32,6 @@ class LightningClassification(pl.LightningModule):
         self.model = get_model(self.cfg, mode=self.mode, pretrained_weights=self.pretrained_weights)
         self.summary_loss = AverageMeter()
         self.metric = accuracy #pl.metrics.Accuracy()
-        self.gt_all = []
-        self.preds_all = []
         self.hydra_cwd = HydraConfig.get().run.dir
         self.weight_dir = hydra.utils.to_absolute_path(self.hydra_cwd)
         self.best_loss = 10**5
@@ -141,9 +139,7 @@ class LightningClassification(pl.LightningModule):
                 self.summary_loss.update(to_scalar(loss))
                 summary_loss = torch.tensor(self.summary_loss.avg, dtype=torch.float).to('cuda')
 
-                self.gt_all.append(targets.cpu().numpy())
                 probs = torch.sigmoid(logits)
-                self.preds_all.append(probs.detach().cpu().numpy())
                 log = {'train_loss': loss}#, 'loss_meter': self.summary_loss.val}
 
                 return {'loss': loss, 'train_loss_avg': summary_loss, 'log': log}#, 'progress_bar': float(self.summary_loss.val)}
@@ -194,24 +190,16 @@ class LightningClassification(pl.LightningModule):
             logits = self.model(images)
 
             if 'AttrDataset' in self.cfg.DATASET.CLASS_NAME:
-                self.gt_all.append(targets.cpu().numpy())
                 targets[targets == -1] = 0
-            elif 'CustomDataset' in self.cfg.DATASET.CLASS_NAME:
-                self.preds_all += [torch.argmax(logits, 1).detach().cpu().numpy()]
-                self.gt_all += [targets.detach().cpu().numpy()]
-            else:
-                raise NotImplementedError(f'Dataset class: {self.cfg.DATASET.CLASS_NAME } is not defined.')
 
             loss = criterion(logits, targets)
 
             if 'AttrDataset' in self.cfg.DATASET.CLASS_NAME:
-                probs = torch.sigmoid(logits)
-                self.preds_all.append(probs.cpu().numpy())            
                 self.summary_loss.update(to_scalar(loss))
                 summary_loss = torch.tensor(self.summary_loss.val, dtype=torch.float).to('cuda')
                 summary_loss_avg = torch.tensor(self.summary_loss.avg, dtype=torch.float).to('cuda')
                 #TODO: self.summary_loss.avg -> loss?
-                return {'val_loss': loss, 'val_loss_avg': summary_loss_avg, 'val_summary_loss': summary_loss}
+                return {'val_loss': loss, 'val_loss_avg': summary_loss_avg, 'val_summary_loss': summary_loss, 'logits': logits, 'target': targets}
             elif 'CustomDataset' in self.cfg.DATASET.CLASS_NAME:
                 self.loss_sum += loss.item()*targets.shape[0]
                 self.sample_num += targets.shape[0]
@@ -237,13 +225,16 @@ class LightningClassification(pl.LightningModule):
             if 'AttrDataset' in self.cfg.DATASET.CLASS_NAME:
                 val_summary_loss_avg = torch.stack([x['val_loss_avg'] for x in outputs]).mean()
 
-            valid_gt_old = np.concatenate(self.gt_all, axis=0)
-            valid_pred_old = np.concatenate(self.preds_all, axis=0)
             valid_gt = torch.cat([x['target'] for x in outputs])
             valid_pred = torch.cat([x['logits'] for x in outputs])
+            valid_gt = valid_gt.cpu().numpy()
+            valid_pred = valid_pred.cpu().numpy()
+            pred_argmax = np.argmax(valid_pred, axis=1)
+            gt_argmax = np.argmax(valid_gt, axis=1)
 
             if 'AttrDataset' in self.cfg.DATASET.CLASS_NAME:
-                valid_result = get_pedestrian_metrics(valid_gt, valid_pred)
+                probs = torch.sigmoid(valid_pred)
+                valid_result = get_pedestrian_metrics(valid_gt, probs)
 
                 print(f'Evaluation on test set, \n',
                     'mA: {:.4f},  pos_recall: {:.4f} , neg_recall: {:.4f} \n'.format(
@@ -254,8 +245,8 @@ class LightningClassification(pl.LightningModule):
                 cur_metric = valid_result.ma
                 metric_name = 'mA'
             elif 'CustomDataset' in self.cfg.DATASET.CLASS_NAME:
-                cur_metric = (valid_pred_old==valid_gt_old).mean()
-                score = self.metric(valid_pred.argmax(1), valid_gt)
+                cur_metric = (gt_argmax==pred_argmax).mean()
+                score = self.metric(pred_argmax, gt_argmax)
                 metric_name = 'Accuracy'
                 self.log.info('validation multi-class accuracy = {:.4f}'.format(cur_metric))
                 self.log.info('validation lightning metrics accuracy = {:.4f}'.format(score))
@@ -276,13 +267,13 @@ class LightningClassification(pl.LightningModule):
                 self.log.info(f'Best Loss found: {self.best_loss}')
                 self.log.info(f'Best Loss weight saved to: {ckpt_model_name_loss}')
             
-            best_score = torch.as_tensor(self.best_score, dtype=torch.float).to('cuda')
+            score = torch.as_tensor(score, dtype=torch.float).to('cuda')
 
             if 'AttrDataset' in self.cfg.DATASET.CLASS_NAME:
-                tensorboard_logs = {'val_loss': val_loss_mean, 'val_summary_loss_avg': val_summary_loss_avg, 'val_summary_loss': val_summary_loss_val, 'val_score': best_score}
-                return {'val_loss': val_loss_mean, 'val_summary_loss_avg': val_summary_loss_avg, 'val_summary_loss': val_summary_loss_val, 'val_score': best_score, 'log': tensorboard_logs, 'progress_bar': tensorboard_logs}
+                tensorboard_logs = {'val_loss': val_loss_mean, 'val_summary_loss_avg': val_summary_loss_avg, 'val_summary_loss': val_summary_loss, 'val_score': score}
+                return {'val_loss': val_loss_mean, 'val_summary_loss_avg': val_summary_loss_avg, 'val_summary_loss': val_summary_loss, 'val_score': score, 'log': tensorboard_logs, 'progress_bar': tensorboard_logs}
             elif 'CustomDataset' in self.cfg.DATASET.CLASS_NAME:
-                tensorboard_logs = {'val_loss': val_loss_mean,  'val_summary_loss': val_summary_loss, 'val_score': best_score, 'val_accuracy': cur_metric}
-                return {'val_loss': val_loss_mean, 'val_summary_loss': val_summary_loss, 'val_score': best_score, 'log': tensorboard_logs, 'progress_bar': tensorboard_logs}
+                tensorboard_logs = {'val_loss': val_loss_mean,  'val_summary_loss': val_summary_loss, 'val_score': score, 'val_accuracy': cur_metric}
+                return {'val_loss': val_loss_mean, 'val_summary_loss': val_summary_loss, 'val_score': score, 'log': tensorboard_logs, 'progress_bar': tensorboard_logs}
         else:
             raise NotImplementedError(f'Model class: {self.cfg.MODEL.BACKBONE.CLASS_NAME} is not defined.')
