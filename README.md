@@ -29,9 +29,5 @@ Identify the type of disease present on a Cassava Leaf image
 └── tests                   : テストコード
 ```
 
-##  Configuration
-See [Config.md](Config.md)
-
-
 ## Datasets
 - [Use 2019 datasets](https://www.kaggle.com/piantic/train-cassava-starter-using-various-loss-funcs/notebook)
