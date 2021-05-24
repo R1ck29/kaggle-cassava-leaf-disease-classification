@@ -1,4 +1,0 @@
-# @package _global_
-AUGMENTATION:
-    hflip: 0.5
-    rscale_crop: [720, 720]

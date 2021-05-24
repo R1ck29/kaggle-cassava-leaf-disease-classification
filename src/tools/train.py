@@ -58,38 +58,7 @@ def main(cfg):
             del model, trainer, loggers, lr_logger, model_checkpoint, early_stopping
             torch.cuda.empty_cache()
             gc.collect()
-        
-    elif cfg.FRAMEWORK == 'tensorflow':
-        from src.utils.tensorflow import get_generator, create_model, get_callback
-        import tensorflow as tf
-        config = tf.compat.v1.ConfigProto(gpu_options=tf.compat.v1.GPUOptions(allow_growth=True))
-        session = tf.compat.v1.Session(config=config)
-        tf.compat.v1.keras.backend.set_session(session)
 
-        set_gpu(cfg.SYSTEM.GPUS)
-        device = [int(gid) for gid in cfg.SYSTEM.GPUS.split(',')]
-        
-        # fold loop
-        for fold in range(cfg.DATA.N_FOLD):
-            # データ生成関数の定義
-            gen = get_generator(cfg)
-
-            # コールバックのインスタンス化
-            cbs = get_callback(output_path,cfg,gen)
-
-            # define model
-            model = create_model(cfg,device)
-
-            # do training
-            model.fit_generator(gen.generate(train=True,
-                                random_transform=True,
-                                random_crop=cfg.TRAIN['RANDOM_CROP']),
-                                steps_per_epoch=gen.train_df.shape[0]//cfg.TRAIN['BATCH_SIZE']*len(device),
-                                epochs=cfg.TRAIN['EPOCHS'],
-                                validation_data=gen.generate(train=False,
-                                                             random_transform=False),
-                                validation_steps=gen.val_df.shape[0],
-                                callbacks=cbs)
 
 if __name__ == '__main__':
     main()

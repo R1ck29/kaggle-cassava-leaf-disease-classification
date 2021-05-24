@@ -50,22 +50,7 @@ def main(cfg):
         save_path = join(cwd, 'result.pkl')
         df.to_pickle(save_path)
         print("saved result at %s"%save_path)
-        
-    elif cfg.FRAMEWORK == 'tensorflow':
-        
-        model = model_deeplab.Deeplabv3(input_shape=cfg.dataset['input_shape'],
-                                        classes=cfg.dataset['num_classes'] - 1,
-                                        backbone=cfg.model['backbone'],
-                                        weights=None)
-        model.load_weights(model_path, by_name=True)
-        
-        df = []
-        for (imgs, keys) in tqdm(dataset):
-            preds = model.predict(imgs)
-            
-            #予測結果のsave
-            df = save_results(cfg, preds, df)
-        
+
     
 if __name__ == '__main__':
     main()
